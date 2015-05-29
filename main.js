@@ -11,8 +11,14 @@ app.use("/proxy", proxy("https://remoteservices.tddirectinvesting.co.uk", {
         delete res._headers["www-authenticate"];
         delete res._headerNames["www-authenticate"];
 
-        data = JSON.parse(data.toString('utf8'));
-        callback(null, JSON.stringify(data));
+        if (res._headers["set-cookie"]) {
+            res._headers["set-cookie"][0] = res._headers["set-cookie"][0]
+                .replace("; Secure", "")
+                .replace("; HTTPOnly", "")
+            ;
+        }
+
+        callback(null, data);
     }
 }));
 
